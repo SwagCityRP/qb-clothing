@@ -375,12 +375,25 @@ Citizen.CreateThread(function()
     end
 end)
 
+function TableConcat(t1,t2)
+    for i=1,#t2 do
+       t1[#t1+1] = t2[i]
+    end
+    return t1
+ end
+
 RegisterNetEvent('qb-clothing:client:getOutfits', function(requiredJob, gradeLevel)
     local gender = "male"
     if QBCore.Functions.GetPlayerData().charinfo.gender == 1 then gender = "female" end
     QBCore.Functions.TriggerCallback('qb-clothing:server:getOutfits', function(result)
+        local myJobOutfits = {}
+        for i=gradeLevel,0,-1 do
+            if Config.Outfits[requiredJob][gender][i] ~= nil then
+                myJobOutfits = TableConcat(myJobOutfits, Config.Outfits[requiredJob][gender][i])
+            end
+        end
         openMenu({
-            {menu = "roomOutfits", label = "Presets", selected = true, outfits = Config.Outfits[requiredJob][gender][gradeLevel]},
+            {menu = "roomOutfits", label = "Presets", selected = true, outfits = myJobOutfits},
             {menu = "myOutfits", label = "My Outfits", selected = false, outfits = result},
             {menu = "character", label = "Clothing", selected = false},
             {menu = "accessoires", label = "Accessories", selected = false}
